@@ -4,12 +4,14 @@
 const NOTION_API_BASE = 'https://api.notion.com/v1';
 const NOTION_VERSION = '2025-09-03';
 
+export type NotionCategory = 'Template' | 'Affiliate' | 'App' | 'Knowledge';
+
 export interface NotionItem {
   id: string;
   title: string;
   description: string;
   imageUrl: string;
-  category: 'Template' | 'Affiliate';
+  category: NotionCategory;
   link: string;
   price: string;
 }
@@ -21,7 +23,7 @@ const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2c
 // Helper to make Notion API calls
 async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
   const url = `${NOTION_API_BASE}${endpoint}`;
-  
+
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -44,12 +46,12 @@ async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<a
 // Query data source using the Data Source Query endpoint
 async function queryDataSource(filter?: any): Promise<any[]> {
   const endpoint = `/data_sources/${DATA_SOURCE_ID}/query`;
-  
+
   const body: any = {};
   if (filter) {
     body.filter = filter;
   }
-  
+
   body.sorts = [
     {
       property: 'Created',
@@ -68,80 +70,80 @@ async function queryDataSource(filter?: any): Promise<any[]> {
 // Helper: Safely extract title from various formats
 function getTitle(property: any): string {
   if (!property) return '';
-  
+
   // Handle title type (array of rich_text objects)
   if (Array.isArray(property)) {
     return property.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-  
+
   // Handle object with title property
   if (property.title && Array.isArray(property.title)) {
     return property.title.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-  
+
   // Handle object with rich_text property
   if (property.rich_text && Array.isArray(property.rich_text)) {
     return property.rich_text.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-  
+
   // Direct string
   if (typeof property === 'string') {
     return property;
   }
-  
+
   return '';
 }
 
 // Helper: Extract plain text from rich_text
 function getPlainText(property: any): string {
   if (!property) return '';
-  
+
   const richText = property.rich_text || property.text || property;
-  
+
   if (Array.isArray(richText)) {
     return richText.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-  
+
   if (typeof property === 'string') {
     return property;
   }
-  
+
   return '';
 }
 
 // Helper: Get URL from various property types
 function getUrl(property: any): string {
   if (!property) return '';
-  
+
   // Handle URL type property
   if (typeof property.url === 'string') {
     return property.url;
   }
-  
+
   return '';
 }
 
 // Helper: Extract image URL from files or external property
 function getImageUrl(property: any): string {
   if (!property) return '';
-  
+
   // Handle files type
   if (property.files && Array.isArray(property.files) && property.files.length > 0) {
     const file = property.files[0];
     if (file.external?.url) return file.external.url;
     if (file.file?.url) return file.file.url;
   }
-  
+
   // Handle external type
   if (property.external?.url) {
     return property.external.url;
   }
-  
+
   // Handle direct URL
   if (typeof property === 'string') {
     return property;
   }
-  
+
   // Default placeholder
   return 'https://via.placeholder.com/400x300';
 }
@@ -149,11 +151,11 @@ function getImageUrl(property: any): string {
 // Helper: Get select value
 function getSelect(property: any): string {
   if (!property) return '';
-  
+
   if (property.select && property.select.name) {
     return property.select.name;
   }
-  
+
   return '';
 }
 
@@ -162,29 +164,29 @@ function parseItem(page: any): NotionItem | null {
   if (!page || !page.properties) {
     return null;
   }
-  
+
   const p = page.properties;
-  
+
   const title = getTitle(p.Title) || getTitle(p.Name);
   const description = getPlainText(p.Description);
-  const category = getSelect(p.Category) as 'Template' | 'Affiliate';
-  const link = getUrl(p.Link);
+  const category = getSelect(p.Category) as NotionCategory | '';
+  const link = getUrl(p.Link) || getPlainText(p.Link) || '';
   const price = getSelect(p.Price) || '$0';
   const imageUrl = getImageUrl(p['Image URL'] || p.Image);
-  
+
   // Skip items without titles
   if (!title) {
     return null;
   }
-  
+
   return {
     id: page.id,
     title,
-    description,
-    imageUrl,
-    category,
-    link,
-    price,
+    description: description || '',
+    imageUrl: imageUrl || '',
+    category: (category as NotionCategory) || 'Affiliate',
+    link: link || '#',
+    price: price || '$0',
   };
 }
 
@@ -201,13 +203,13 @@ export async function getAllItems(): Promise<NotionItem[]> {
         }
       ]
     };
-    
+
     const results = await queryDataSource(filter);
-    
+
     return results
       .map(parseItem)
       .filter((item): item is NotionItem => item !== null);
-      
+
   } catch (error) {
     console.error('Error fetching Notion items:', error);
     return [];
@@ -215,7 +217,7 @@ export async function getAllItems(): Promise<NotionItem[]> {
 }
 
 // Fetch items by category
-export async function getItemsByCategory(category: 'Template' | 'Affiliate'): Promise<NotionItem[]> {
+export async function getItemsByCategory(category: NotionCategory): Promise<NotionItem[]> {
   try {
     const filter = {
       and: [
@@ -233,13 +235,13 @@ export async function getItemsByCategory(category: 'Template' | 'Affiliate'): Pr
         }
       ]
     };
-    
+
     const results = await queryDataSource(filter);
-    
+
     return results
       .map(parseItem)
       .filter((item): item is NotionItem => item !== null);
-      
+
   } catch (error) {
     console.error('Error fetching items by category:', error);
     return [];
