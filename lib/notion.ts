@@ -1,146 +1,250 @@
-import { Client } from '@notionhq/client'
+// Notion API Integration for Version 2025-09-03
+// Uses Data Source Query endpoint
 
-// Initialize Notion client
-// In production, use environment variable
-const notion = new Client({
-  auth: process.env.NOTION_API_KEY || '',
-})
-
-// Database ID from user
-const DATABASE_ID = '5d3593a2-b64f-49dc-8dd3-94913ab8175b'
+const NOTION_API_BASE = 'https://api.notion.com/v1';
+const NOTION_VERSION = '2025-09-03';
 
 export interface NotionItem {
-  id: string
-  title: string
-  description: string
-  imageUrl: string
-  category: 'Template' | 'Affiliate'
-  link: string
-  price: string
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  category: 'Template' | 'Affiliate';
+  link: string;
+  price: string;
 }
 
-// Helper to extract text from rich_text propertyunction getTextFromRichText(property: any): string {
- if (!property?.rich_text) return ''
-  return property.rich_text.map((text: any) => text.plain_text).join('')
+// Get API key and Data Source ID from environment
+const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
+const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID || '5d3593a2-b64f-49dc-8dd3-94913ab8175b';
+
+// Helper to make Notion API calls
+async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
+  const url = `${NOTION_API_BASE}${endpoint}`;
+  
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${NOTION_API_KEY}`,
+      'Notion-Version': NOTION_VERSION,
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('Notion API Error:', error);
+    throw new Error(`Notion API error: ${response.status}`);
+  }
+
+  return response.json();
 }
 
-// Helper to extract text from title property
-function getTitle(property: any): string {
-  if (!property?.title) return ''
-  return property.title.map((text: any) => text.plain_text).join('')
-}
-
-// Helper to extract URL from files or external property
-function getImageUrl(property: any): string {
-  // Try files first
-  if (property?.files?.length > 0) {
-    const file = property.files[0]
-    if (file.external?.url) return file.external.url
-if (file.file?.url) return file.file.url
+// Query data source using the Data Source Query endpoint
+async function queryDataSource(filter?: any): Promise<any[]> {
+  const endpoint = `/data_sources/${DATA_SOURCE_ID}/query`;
+  
+  const body: any = {};
+  if (filter) {
+    body.filter = filter;
   }
   
-  // Try external URL property
-  if (property?.external?.url) return property.external.url
+  body.sorts = [
+    {
+      property: 'Created',
+      direction: 'descending'
+    }
+  ];
+
+  const response = await notionAPI(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+  return response.results || [];
+}
+
+// Helper: Safely extract title from various formats
+function getTitle(property: any): string {
+  if (!property) return '';
   
-  // Try URL property
-  if (property?.url) return property.url
+  // Handle title type (array of rich_text objects)
+  if (Array.isArray(property)) {
+    return property.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
+  }
+  
+  // Handle object with title property
+  if (property.title && Array.isArray(property.title)) {
+    return property.title.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
+  }
+  
+  // Handle object with rich_text property
+  if (property.rich_text && Array.isArray(property.rich_text)) {
+    return property.rich_text.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
+  }
+  
+  // Direct string
+  if (typeof property === 'string') {
+    return property;
+  }
+  
+  return '';
+}
+
+// Helper: Extract plain text from rich_text
+function getPlainText(property: any): string {
+  if (!property) return '';
+  
+  const richText = property.rich_text || property.text || property;
+  
+  if (Array.isArray(richText)) {
+    return richText.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
+  }
+  
+  if (typeof property === 'string') {
+    return property;
+  }
+  
+  return '';
+}
+
+// Helper: Get URL from various property types
+function getUrl(property: any): string {
+  if (!property) return '';
+  
+  // Handle URL type property
+  if (typeof property.url === 'string') {
+    return property.url;
+  }
+  
+  return '';
+}
+
+// Helper: Extract image URL from files or external property
+function getImageUrl(property: any): string {
+  if (!property) return '';
+  
+  // Handle files type
+  if (property.files && Array.isArray(property.files) && property.files.length > 0) {
+    const file = property.files[0];
+    if (file.external?.url) return file.external.url;
+    if (file.file?.url) return file.file.url;
+  }
+  
+  // Handle external type
+  if (property.external?.url) {
+    return property.external.url;
+  }
+  
+  // Handle direct URL
+  if (typeof property === 'string') {
+    return property;
+  }
   
   // Default placeholder
-  return 'https://via.placeholder.com/400x300'
+  return 'https://via.placeholder.com/400x300';
 }
 
-// Helper to extract URL from URL property
-function getUrl(property: any): string {
-  return property?.url || ''
-}
-
-// Helper to extract select value
+// Helper: Get select value
 function getSelect(property: any): string {
-  return property?.select?.name || ''
+  if (!property) return '';
+  
+  if (property.select && property.select.name) {
+    return property.select.name;
+  }
+  
+  return '';
 }
 
-// Fetch all items from Notion database
+// Parse database item to NotionItem
+function parseItem(page: any): NotionItem | null {
+  if (!page || !page.properties) {
+    return null;
+  }
+  
+  const p = page.properties;
+  
+  const title = getTitle(p.Title) || getTitle(p.Name);
+  const description = getPlainText(p.Description);
+  const category = getSelect(p.Category) as 'Template' | 'Affiliate';
+  const link = getUrl(p.Link);
+  const price = getSelect(p.Price) || '$0';
+  const imageUrl = getImageUrl(p['Image URL'] || p.Image);
+  
+  // Skip items without titles
+  if (!title) {
+    return null;
+  }
+  
+  return {
+    id: page.id,
+    title,
+    description,
+    imageUrl,
+    category,
+    link,
+    price,
+  };
+}
+
+// Fetch all published items
 export async function getAllItems(): Promise<NotionItem[]> {
   try {
-    const response = await notion.databases.query({
-      database_id: DATABASE_ID,
-filter: {
-        property: 'Status',
-        select: {
-          equals: 'Published'
-        }
-      },
-      sorts: [
+    const filter = {
+      and: [
         {
-          property: 'Created',
-          direction: 'descending'
+          property: 'Status',
+          select: {
+            equals: 'Published'
+          }
         }
       ]
-    })
-
-    return response.results.map((page: any) => {
-      const properties = page.properties
+    };
+    
+    const results = await queryDataSource(filter);
+    
+    return results
+      .map(parseItem)
+      .filter((item): item is NotionItem => item !== null);
       
-      return {
-        id: page.id,
-        title: getTitle(properties.Title) || getTextFromRichText(properties.Name),
-        description: getTextFromRichText(properties.Description),
-        imageUrl: getImageUrl(properties['Image URL'] || properties.Image),
-        category: getSelect(properties.Category) as 'Template' | 'Affiliate',
-        link: getUrl(properties.Link),
-        price: getSelect(properties.Price) || '$0'
-      }
-    }).filter(item => item.title) // Filter out items without titles
   } catch (error) {
-    console.error('Error fetching Notion items:', error)
-    return []
+    console.error('Error fetching Notion items:', error);
+    return [];
   }
 }
 
 // Fetch items by category
 export async function getItemsByCategory(category: 'Template' | 'Affiliate'): Promise<NotionItem[]> {
   try {
-    const response = await notion.databases.query({
-      database_id: DATABASE_ID,
-      filter: {
-        and: [
-          {
-property: 'Category',
-            select: {
-              equals: category
-            }
-          },
-    {
-property: 'Status',
-        select: {
-          equals: 'Published'
-    }
-  }
-        ]
-      },
-      sorts: [
+    const filter = {
+      and: [
         {
-          property: 'Created',
-    direction: 'descending'
-  }
+          property: 'Category',
+          select: {
+            equals: category
+          }
+        },
+        {
+          property: 'Status',
+          select: {
+            equals: 'Published'
+          }
+        }
       ]
-    })
-
-    return response.results.map((page: any) => {
-      const properties = page.properties
+    };
+    
+    const results = await queryDataSource(filter);
+    
+    return results
+      .map(parseItem)
+      .filter((item): item is NotionItem => item !== null);
       
-      return {
-        id: page.id,
-        title: getTitle(properties.Title) || getTextFromRichText(properties.Name),
- description: getTextFromRichText(properties.Description),
-        imageUrl: getImageUrl(properties['Image URL'] || properties.Image),
-        category: getSelect(properties.Category) as 'Template' | 'Affiliate',
-        link: getUrl(properties.Link),
-price: getSelect(properties.Price) || '$0'
-      }
-    }).filter(item => item.title)
   } catch (error) {
-    console.error('Error fetching items by category:', error)
-    return []
+    console.error('Error fetching items by category:', error);
+    return [];
   }
 }
+
+// Export for use in other files
+export { DATA_SOURCE_ID };
