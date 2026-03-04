@@ -4,7 +4,7 @@
 const NOTION_API_BASE = 'https://api.notion.com/v1';
 const NOTION_VERSION = '2025-09-03';
 
-export type NotionCategory = 'Template' | 'Affiliate' | 'App' | 'Knowledge';
+export type NotionCategory = 'Template' | 'Affiliate' | 'App' | 'Knowledge' | 'Tools' | 'Webinar';
 
 export interface NotionItem {
   id: string;
@@ -190,9 +190,9 @@ function parseItem(page: any): NotionItem | null {
   const title = getTitle(p.Title) || getTitle(p.Name);
   const description = getPlainText(p.Description);
   const category = getSelect(p.Category) as NotionCategory | '';
-  const link = getUrl(p.Link) || getPlainText(p.Link) || '';
+  const link = getUrl(p['Product URL']) || getUrl(p.Link) || getPlainText(p.Link) || '';
   const price = getSelect(p.Price) || '';
-  const imageUrl = getImageUrl(p['Image URL'] || p.Image);
+  const imageUrl = getImageUrl(p['Image'] || p['Image URL']);
 
   // Skip items without titles
   if (!title) {
