@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FDFBF7;
+  --foreground: #1A1A1A;
+}
+
+@layer base {
+  * {
+    @apply border-subtle-border/40;
+  }
+  
+  body {
+    @apply bg-warm-beige text-deep-charcoal leading-relaxed;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-deep-charcoal text-white px-6 py-3 rounded-lg font-medium 
+           hover:bg-deep-charcoal/90 transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-deep-charcoal/20;
+  }
+  
+  .btn-outline {
+    @apply border border-deep-charcoal text-deep-charcoal px-6 py-3 rounded-lg font-medium
+           hover:bg-deep-charcoal/5 transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl p-6 shadow-sm border border-subtle-border/60
+           hover:shadow-md hover:border-subtle-border transition-all duration-300;
+  }
+  
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12 py-12 md:py-16 lg:py-20;
+  }
+  
+  .container-width {
+    @apply max-w-6xl mx-auto;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FDFBF7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4CFC7;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B2A9;
+}
