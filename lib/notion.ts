@@ -16,7 +16,7 @@ export interface NotionItem {
 
 // Get API key and Data Source ID from environment
 const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
-const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID || '5d3593a2-b64f-49dc-8dd3-94913ab8175b';
+const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2caf46c846f0a13';
 
 // Helper to make Notion API calls
 async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
