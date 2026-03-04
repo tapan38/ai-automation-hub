@@ -23,6 +23,7 @@ export default function Card({ title, description, imageUrl, price, link, catego
     : imageUrl
 
   const isFree = price === '$0' || price === 'Free' || price === '' || !price
+  const hasLink = link && link !== '#'
   
   // Determine button text and behavior based on category
   const getButtonConfig = () => {
@@ -30,30 +31,35 @@ export default function Card({ title, description, imageUrl, price, link, catego
       case 'App':
         return {
           text: 'View App',
-          href: link,
-          isGumroad: false,
+          href: hasLink ? link : '#',
           target: '_blank'
         }
       case 'Template':
+        return {
+          text: 'Get the Template',
+          href: hasLink ? link : 'https://curioustapan.gumroad.com/',
+          target: '_self'
+        }
       case 'Knowledge':
         return {
           text: isFree ? 'Get it Free' : price,
-          href: link,
-          isGumroad: true,
+          href: hasLink ? link : 'https://curioustapan.gumroad.com/',
           target: '_self'
         }
       case 'Affiliate':
       default:
         return {
           text: 'Learn More',
-          href: link,
-          isGumroad: false,
+          href: hasLink ? link : '#',
           target: '_blank'
         }
     }
   }
 
   const buttonConfig = getButtonConfig()
+
+  // Check if it's a Gumroad link (for overlay)
+  const isGumroadLink = buttonConfig.href.includes('gumroad.com')
 
   return (
     <div className="card group flex flex-col h-full">
@@ -68,8 +74,8 @@ export default function Card({ title, description, imageUrl, price, link, catego
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         
-        {/* Price Tag - only show for paid items (not App, not Free) */}
-        {!isFree && category !== 'App' && category !== 'Knowledge' && (
+        {/* Price Tag - only show for paid items */}
+        {!isFree && category !== 'App' && category !== 'Template' && (
           <div className="absolute top-3 right-3">
             <span className="px-3 py-1 rounded-full text-sm font-medium bg-deep-charcoal text-white">
               {price}
@@ -89,15 +95,25 @@ export default function Card({ title, description, imageUrl, price, link, catego
         </p>
 
         {/* CTA Button - minimalist dark style, always at bottom */}
-        <a
-          href={buttonConfig.href || '#'}
-          target={buttonConfig.target}
-          rel={buttonConfig.target === '_blank' ? 'noopener noreferrer' : undefined}
-          className="inline-flex items-center justify-center w-full px-4 py-3 bg-deep-charcoal text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all duration-200 mt-auto"
-          data-gumroad={buttonConfig.isGumroad ? 'true' : undefined}
-        >
-          {buttonConfig.text}
-        </a>
+        {isGumroadLink ? (
+          // Gumroad overlay button
+          <a
+            href={buttonConfig.href}
+            className="inline-flex items-center justify-center w-full px-4 py-3 bg-deep-charcoal text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all duration-200 mt-auto gumroad-button"
+          >
+            {buttonConfig.text}
+          </a>
+        ) : (
+          // Regular external link
+          <a
+            href={buttonConfig.href}
+            target={buttonConfig.target}
+            rel={buttonConfig.target === '_blank' ? 'noopener noreferrer' : undefined}
+            className="inline-flex items-center justify-center w-full px-4 py-3 bg-deep-charcoal text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all duration-200 mt-auto"
+          >
+            {buttonConfig.text}
+          </a>
+        )}
       </div>
     </div>
   )

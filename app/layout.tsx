@@ -58,6 +58,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        {/* Gumroad Overlay Script */}
+        <script src="https://gumroad.com/js/gumroad.js" async></script>
+        <script src="https://gumroad.com/js/gumroad-embed.js" async></script>
+      </head>
       <body className={`${inter.className} antialiased`}>
         {children}
       </body>
