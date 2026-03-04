@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 
-type Category = 'Template' | 'Affiliate' | 'App' | 'Knowledge'
+type Category = 'Template' | 'Affiliate' | 'App' | 'Knowledge' | 'Tools' | 'Webinar'
 
 interface CardProps {
   title: string
