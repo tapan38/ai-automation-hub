@@ -1,4 +1,4 @@
-import { getItemsByCategory } from '@/lib/notion'
+import { getItemsByCategory } from '@/lib/data'
 import Card, { CardSkeleton } from '@/components/Card'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
