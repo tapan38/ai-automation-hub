@@ -1,5 +1,5 @@
 // Notion API Integration for Version 2025-09-03
-// Uses Data Source Query endpoint
+// Uses standard Database Query endpoint
 
 const NOTION_API_BASE = 'https://api.notion.com/v1';
 const NOTION_VERSION = '2025-09-03';
@@ -18,12 +18,12 @@ export interface NotionItem {
 
 // Get API key and Data Source ID from environment
 const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
-const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2caf46c846f0a13';
+const DATABASE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2caf46c846f0a13';
 
 // Helper to make Notion API calls
 async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
   const url = `${NOTION_API_BASE}${endpoint}`;
-
+  
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -43,20 +43,17 @@ async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<a
   return response.json();
 }
 
-// Query data source using the Data Source Query endpoint
-async function queryDataSource(filter?: any): Promise<any[]> {
-  const endpoint = `/data_sources/${DATA_SOURCE_ID}/query`;
-
+// Query database using the standard Database Query endpoint
+async function queryDatabase(filter?: any): Promise<any[]> {
+  const endpoint = `/databases/${DATABASE_ID}/query`;
   const body: any = {};
+  
   if (filter) {
     body.filter = filter;
   }
-
+  
   body.sorts = [
-    {
-      property: 'Created',
-      direction: 'descending'
-    }
+    { property: 'Created', direction: 'descending' }
   ];
 
   const response = await notionAPI(endpoint, {
@@ -70,80 +67,86 @@ async function queryDataSource(filter?: any): Promise<any[]> {
 // Helper: Safely extract title from various formats
 function getTitle(property: any): string {
   if (!property) return '';
-
+  
   // Handle title type (array of rich_text objects)
   if (Array.isArray(property)) {
     return property.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-
+  
   // Handle object with title property
   if (property.title && Array.isArray(property.title)) {
     return property.title.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-
+  
   // Handle object with rich_text property
   if (property.rich_text && Array.isArray(property.rich_text)) {
     return property.rich_text.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-
+  
   // Direct string
   if (typeof property === 'string') {
     return property;
   }
-
+  
   return '';
 }
 
 // Helper: Extract plain text from rich_text
 function getPlainText(property: any): string {
   if (!property) return '';
-
+  
   const richText = property.rich_text || property.text || property;
-
+  
   if (Array.isArray(richText)) {
     return richText.map((t: any) => t?.plain_text || t?.text?.content || '').join('');
   }
-
+  
   if (typeof property === 'string') {
     return property;
   }
-
+  
   return '';
 }
 
 // Helper: Get URL from various property types
 function getUrl(property: any): string {
   if (!property) return '';
-
+  
   // Handle URL type property
   if (typeof property.url === 'string') {
     return property.url;
   }
-
+  
+  // Handle rich_text with URL
+  const text = getPlainText(property);
+  if (text && text.startsWith('http')) {
+    return text;
+  }
+  
   return '';
 }
 
 // Helper: Extract image URL from files or external property
 function getImageUrl(property: any): string {
   if (!property) return '';
-
+  
   // Handle files type
   if (property.files && Array.isArray(property.files) && property.files.length > 0) {
     const file = property.files[0];
     if (file.external?.url) return file.external.url;
     if (file.file?.url) return file.file.url;
   }
-
+  
   // Handle external type
   if (property.external?.url) {
     return property.external.url;
   }
-
+  
   // Handle direct URL
   if (typeof property === 'string') {
     return property;
   }
-
+  
   // Default placeholder
   return 'https://via.placeholder.com/400x300';
 }
@@ -151,11 +154,11 @@ function getImageUrl(property: any): string {
 // Helper: Get select value
 function getSelect(property: any): string {
   if (!property) return '';
-
+  
   if (property.select && property.select.name) {
     return property.select.name;
   }
-
+  
   return '';
 }
 
@@ -166,12 +169,12 @@ function parseItem(page: any): NotionItem | null {
   }
 
   const p = page.properties;
-
+  
   const title = getTitle(p.Title) || getTitle(p.Name);
   const description = getPlainText(p.Description);
   const category = getSelect(p.Category) as NotionCategory | '';
   const link = getUrl(p.Link) || getPlainText(p.Link) || '';
-  const price = getSelect(p.Price) || '$0';
+  const price = getSelect(p.Price) || '';
   const imageUrl = getImageUrl(p['Image URL'] || p.Image);
 
   // Skip items without titles
@@ -195,21 +198,15 @@ export async function getAllItems(): Promise<NotionItem[]> {
   try {
     const filter = {
       and: [
-        {
-          property: 'Status',
-          select: {
-            equals: 'Published'
-          }
-        }
+        { property: 'Status', select: { equals: 'Published' } }
       ]
     };
-
-    const results = await queryDataSource(filter);
-
+    
+    const results = await queryDatabase(filter);
+    
     return results
       .map(parseItem)
       .filter((item): item is NotionItem => item !== null);
-
   } catch (error) {
     console.error('Error fetching Notion items:', error);
     return [];
@@ -221,27 +218,16 @@ export async function getItemsByCategory(category: NotionCategory): Promise<Noti
   try {
     const filter = {
       and: [
-        {
-          property: 'Category',
-          select: {
-            equals: category
-          }
-        },
-        {
-          property: 'Status',
-          select: {
-            equals: 'Published'
-          }
-        }
+        { property: 'Category', select: { equals: category } },
+        { property: 'Status', select: { equals: 'Published' } }
       ]
     };
-
-    const results = await queryDataSource(filter);
-
+    
+    const results = await queryDatabase(filter);
+    
     return results
       .map(parseItem)
       .filter((item): item is NotionItem => item !== null);
-
   } catch (error) {
     console.error('Error fetching items by category:', error);
     return [];
@@ -249,4 +235,4 @@ export async function getItemsByCategory(category: NotionCategory): Promise<Noti
 }
 
 // Export for use in other files
-export { DATA_SOURCE_ID };
+export { DATABASE_ID };
