@@ -15,8 +15,8 @@ export interface NotionItem {
   price: string;
 }
 
-// Get Maton bearer token from environment
-const MATON_TOKEN = process.env.MATON_API_KEY || '';
+// Get Maton API key from environment or use hardcoded fallback
+const MATON_TOKEN = process.env.MATON_API_KEY || 'nfp_5206519433160mQkTTNBjSwRvjJipmSccCscWB3ZP4zT7G6';
 
 // Helper to make Maton API calls
 async function matonAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
