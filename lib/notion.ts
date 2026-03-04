@@ -24,7 +24,7 @@ async function matonAPI(endpoint: string, options: RequestInit = {}): Promise<an
   const response = await fetch(url, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${MATON_TOKEN}`,
+      'X-API-Key': MATON_TOKEN,
       'Content-Type': 'application/json',
       ...options.headers,
     },
