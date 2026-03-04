@@ -18,7 +18,24 @@ export interface NotionItem {
 
 // Get API key and Data Source ID from environment
 const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
-const DATABASE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2caf46c846f0a13';
+
+// Format database ID to UUID format (with dashes) if needed
+function formatDatabaseId(id: string): string {
+  // If already has dashes, return as-is
+  if (id.includes('-')) return id;
+  
+  // Remove any non-alphanumeric characters
+  const clean = id.replace(/[^a-f0-9]/gi, '');
+  
+  // Check length
+  if (clean.length !== 32) return id;
+  
+  // Insert dashes in UUID format: 8-4-4-4-12
+  return `${clean.slice(0, 8)}-${clean.slice(8, 12)}-${clean.slice(12, 16)}-${clean.slice(16, 20)}-${clean.slice(20, 32)}`;
+}
+
+const RAW_DATABASE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2caf46c846f0a13';
+const DATABASE_ID = formatDatabaseId(RAW_DATABASE_ID);
 
 // Helper to make Notion API calls
 async function notionAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
