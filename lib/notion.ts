@@ -187,7 +187,7 @@ function parseItem(page: any): NotionItem | null {
 
   const p = page.properties;
   
-  const title = getTitle(p.Title) || getTitle(p.Name);
+  const title = getTitle(p.Product) || getTitle(p.Title) || getTitle(p.Name);
   const description = getPlainText(p.Description);
   const category = getSelect(p.Category) as NotionCategory | '';
   const link = getUrl(p['Product URL']) || getUrl(p.Link) || getPlainText(p.Link) || '';
