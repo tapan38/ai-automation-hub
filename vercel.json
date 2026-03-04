@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "buildCommand": "next build",
+  "framework": "nextjs",
+  "env": {
+    "NOTION_API_KEY": "@notion_api_key",
+    "NOTION_DATA_SOURCE_ID": "@notion_data_source_id"
+  }
+}
