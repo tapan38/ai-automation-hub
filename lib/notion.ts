@@ -34,7 +34,7 @@ function formatDatabaseId(id: string): string {
   return `${clean.slice(0, 8)}-${clean.slice(8, 12)}-${clean.slice(12, 16)}-${clean.slice(16, 20)}-${clean.slice(20, 32)}`;
 }
 
-const RAW_DATABASE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b80e8a2caf46c846f0a13';
+const RAW_DATABASE_ID = process.env.NOTION_DATA_SOURCE_ID || '319c1f53d15b808195c5000cec18446c';
 const DATABASE_ID = formatDatabaseId(RAW_DATABASE_ID);
 
 // Helper to make Notion API calls
