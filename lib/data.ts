@@ -76,7 +76,7 @@ export async function getItemsByCategory(category: NotionCategory): Promise<Noti
       }
       // Playbook section: Affiliate + Tools categories
       else if (category === 'Affiliate') {
-        resolve(affiliates.filter(a => a.category === 'Affiliate' || a.category === 'Tools' || a.category === 'Tools'));
+        resolve(affiliates.filter(a => a.category === 'Affiliate'));
       }
       else resolve([]);
     }, 10);
