@@ -14,13 +14,14 @@ export interface NotionItem {
 }
 
 // YOUR PRODUCTS - Edit this to update your website!
-const templates: NotionItem[] = [
+// RULE: Category "App" → Toolbox | Category "Template" → Playbook
+const allProducts: NotionItem[] = [
   {
     id: '1',
     title: 'Free API Guide',
     description: '10+ AI automation tips',
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Free+API+Guide',
-    category: 'Template',
+    category: 'Template',  // Goes to Playbook
     link: 'https://curioustapan.gumroad.com/l/finance',
     price: '$0'
   },
@@ -29,19 +30,16 @@ const templates: NotionItem[] = [
     title: 'Monical AI',
     description: 'All in one AI',
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Monical+AI',
-    category: 'App',
+    category: 'App',  // Goes to Toolbox
     link: 'https://monica.im/invitation-affiliate?ref=ndrmyzc',
     price: 'Free Credits/Trail'
-  }
-];
-
-const affiliates: NotionItem[] = [
+  },
   {
     id: '3',
     title: 'n8n.io',
     description: 'Open-source workflow automation. Connect 400+ apps and APIs to automate everything.',
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=n8n',
-    category: 'Affiliate',
+    category: 'Template',  // Goes to Playbook
     link: 'https://n8n.io',
     price: 'Free'
   },
@@ -50,33 +48,43 @@ const affiliates: NotionItem[] = [
     title: 'Notion',
     description: 'All-in-one workspace for notes, databases, wikis, and project management.',
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Notion',
-    category: 'Affiliate',
+    category: 'Template',  // Goes to Playbook
     link: 'https://notion.so',
     price: 'Free tier'
   }
 ];
 
-// Combine templates and apps for Toolbox section
-const toolboxItems: NotionItem[] = [...templates, ...affiliates.filter(item => item.category === 'App')];
+// UNIVERSAL RULE:
+// - Category = "App" → Toolbox section
+// - Category = "Template" → Playbook section
+
+// Toolbox items: Apps
+const toolboxItems = allProducts.filter(item => item.category === 'App');
+
+// Playbook items: Templates
+const playbookItems = allProducts.filter(item => item.category === 'Template');
+
+// For backwards compatibility
+const templates = playbookItems;
+const affiliates = toolboxItems;
 
 // Export functions
 export async function getAllItems(): Promise<NotionItem[]> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve([...templates, ...affiliates]), 10);
+    setTimeout(() => resolve([...allProducts]), 10);
   });
 }
 
 export async function getItemsByCategory(category: NotionCategory): Promise<NotionItem[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      // Toolbox section: Template + App categories
+      // Toolbox section: Show Apps (Category = "App")
       if (category === 'Template') {
-        resolve([...templates.filter(t => t.category === 'Template'), 
-                ...affiliates.filter(a => a.category === 'App')]);
+        resolve(toolboxItems); // App category items go to Toolbox
       }
-      // Playbook section: Affiliate + Tools categories
+      // Playbook section: Show Templates (Category = "Template")
       else if (category === 'Affiliate') {
-        resolve(affiliates.filter(a => a.category === 'Affiliate'));
+        resolve(playbookItems); // Template category items go to Playbook
       }
       else resolve([]);
     }, 10);
