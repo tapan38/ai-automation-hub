@@ -15,73 +15,70 @@ export default function Header() {
             AI Knowledge Hub
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Swapped */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="#playbook" 
+            <Link
+              href="#toolbox"
+              className="text-sm text-warm-gray hover:text-deep-charcoal transition-colors"
+            >
+              Toolbox
+            </Link>
+            <Link
+              href="#playbook"
               className="text-sm text-warm-gray hover:text-deep-charcoal transition-colors"
             >
               Playbook
-            </Link>
-       <Link 
-              href="#templates" 
- className="text-sm text-warm-gray hover:text-deep-charcoal transition-colors"
-            >
-              Toolbox
             </Link>
           </nav>
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <a 
-              href="#subscribe"
-              className="btn-primary text-sm"
-            >
+            <a href="#subscribe" className="btn-primary text-sm">
               Subscribe
             </a>
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
+          <button
             className="md:hidden p-2"
-    onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMenuOpen ? (
-  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-       ) : (
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Swapped */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-subtle-border/30">
             <nav className="flex flex-col space-y-4">
-       <Link 
-                href="#playbook" 
-     className="text-sm text-warm-gray hover:text-deep-charcoal"
+              <Link
+                href="#toolbox"
+                className="text-sm text-warm-gray hover:text-deep-charcoal"
                 onClick={() => setIsMenuOpen(false)}
-              >
-  Playbook
-              </Link>
-    <Link 
-         href="#templates" 
-   className="text-sm text-warm-gray hover:text-deep-charcoal"
-     onClick={() => setIsMenuOpen(false)}
               >
                 Toolbox
               </Link>
-              <a 
-   href="#subscribe"
-       className="btn-primary text-sm text-center"
+              <Link
+                href="#playbook"
+                className="text-sm text-warm-gray hover:text-deep-charcoal"
                 onClick={() => setIsMenuOpen(false)}
-      >
-    Subscribe
+              >
+                Playbook
+              </Link>
+              <a
+                href="#subscribe"
+                className="btn-primary text-sm text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Subscribe
               </a>
-</nav>
+            </nav>
           </div>
         )}
       </div>

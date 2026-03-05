@@ -56,9 +56,11 @@ const affiliates: NotionItem[] = [
   }
 ];
 
+// Combine templates and apps for Toolbox section
+const toolboxItems: NotionItem[] = [...templates, ...affiliates.filter(item => item.category === 'App')];
+
 // Export functions
 export async function getAllItems(): Promise<NotionItem[]> {
-  // Add a small delay to simulate async loading (optional)
   return new Promise((resolve) => {
     setTimeout(() => resolve([...templates, ...affiliates]), 10);
   });
@@ -67,8 +69,15 @@ export async function getAllItems(): Promise<NotionItem[]> {
 export async function getItemsByCategory(category: NotionCategory): Promise<NotionItem[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      if (category === 'Template') resolve(templates);
-      else if (category === 'Affiliate') resolve(affiliates);
+      // Toolbox section: Template + App categories
+      if (category === 'Template') {
+        resolve([...templates.filter(t => t.category === 'Template'), 
+                ...affiliates.filter(a => a.category === 'App')]);
+      }
+      // Playbook section: Affiliate + Tools categories
+      else if (category === 'Affiliate') {
+        resolve(affiliates.filter(a => a.category === 'Affiliate' || a.category === 'Tools' || a.category === 'Tools'));
+      }
       else resolve([]);
     }, 10);
   });
