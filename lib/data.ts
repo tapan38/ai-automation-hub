@@ -1,7 +1,12 @@
-// Google Sheets Integration via Maton OR fallback to sample data
-const MATON_BASE_URL = 'https://api.maton.ai';
-const MATON_TOKEN = 'nfp_5206519433160mQkTTNBjSwRvjJipmSccCscWB3ZP4zT7G6';
-const SHEETS_CONNECTION_ID = 'c7636909-2514-406d-91bd-07ec3c151caa';
+// Google Sheets Integration - Live Product Data
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+
+const SHEET_ID = '1C7lPBltqIemPNx5SdekEzc5iw9FU-_xMgjQjlGn7z4w';
+
+// Google Sheets token from environment variable (set in Vercel)
+const accessToken = process.env.SHEETS_ACCESS_TOKEN || '';
 
 export type NotionCategory = 'Template' | 'Affiliate' | 'App' | 'Knowledge' | 'Tools' | 'Webinar';
 
@@ -15,8 +20,8 @@ export interface NotionItem {
   price: string;
 }
 
-// Your static data (edit these to update your website immediately)
-const staticTemplates: NotionItem[] = [
+// Static fallback data
+const fallbackTemplates: NotionItem[] = [
   {
     id: '1',
     title: 'AI Automation Starter Pack',
@@ -34,19 +39,10 @@ const staticTemplates: NotionItem[] = [
     category: 'Template',
     link: 'https://curioustapan.gumroad.com/',
     price: '$15'
-  },
-  {
-    id: '3',
-    title: 'Email Outreach Workflow',
-    description: 'Automate personalized email outreach with AI-generated sequences and follow-up automation.',
-    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Email+Outreach',
-    category: 'Template',
-    link: 'https://curioustapan.gumroad.com/',
-    price: 'Free'
   }
 ];
 
-const staticAffiliates: NotionItem[] = [
+const fallbackAffiliates: NotionItem[] = [
   {
     id: '7',
     title: 'n8n.io',
@@ -54,137 +50,160 @@ const staticAffiliates: NotionItem[] = [
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=n8n',
     category: 'Affiliate',
     link: 'https://n8n.io',
-    price: 'Free/Self-hosted'
-  },
-  {
-    id: '8',
-    title: 'Notion',
-    description: 'All-in-one workspace for notes, databases, wikis, and project management.',
-    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Notion',
-    category: 'Affiliate',
-    link: 'https://notion.so',
-    price: 'Free tier'
+    price: 'Free'
   }
 ];
 
-// Try to fetch from Google Sheets via Maton (fallback to static if fails)
-async function fetchFromMatonSheets(): Promise<{templates: NotionItem[], affiliates: NotionItem[]} | null> {
-  try {
-    console.log('Trying Maton Sheets API...');
-    
-    // Different endpoint formats to try
-    const endpoints = [
-      `/connections/${SHEETS_CONNECTION_ID}/sheets/AI%20Automation%20Dataset/values`,
-      `/connections/${SHEETS_CONNECTION_ID}/google-sheets/values`,
-      `/connections/${SHEETS_CONNECTION_ID}/values`,
-    ];
-    
-    let response = null;
-    let lastError = null;
-    
-    for (const endpoint of endpoints) {
-      try {
-        response = await fetch(`${MATON_BASE_URL}${endpoint}`, {
-          method: 'GET',
-          headers: {
-            'X-API-Key': MATON_TOKEN,
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (response.ok) {
-          console.log(`Success with endpoint: ${endpoint}`);
-          break;
+// Fetch from Google Sheets
+async function fetchFromSheets(): Promise<{templates: NotionItem[], affiliates: NotionItem[]} | null> {
+  return new Promise((resolve) => {
+    if (!accessToken) {
+      console.log('No access token, using fallback');
+      resolve(null);
+      return;
+    }
+
+    const options = {
+      hostname: 'sheets.googleapis.com',
+      port: 443,
+      path: `/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A1:F100`,
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/json',
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const result = JSON.parse(data);
+          
+          if (result.error) {
+            console.log('Sheets error:', result.error.message);
+            resolve(null);
+            return;
+          }
+          
+          if (!result.values || result.values.length < 2) {
+            console.log('No data in sheet');
+            resolve(null);
+            return;
+          }
+          
+          const parsed = parseSheetData(result.values);
+          resolve(parsed);
+        } catch (e) {
+          console.error('Parse error:', e);
+          resolve(null);
         }
-        
-        lastError = await response.text();
-        console.log(`Endpoint failed: ${endpoint} - ${lastError}`);
-      } catch (e) {
-        console.log(`Error with endpoint ${endpoint}:`, e);
-      }
-    }
+      });
+    });
+
+    req.on('error', (e) => {
+      console.error('Request error:', e);
+      resolve(null);
+    });
     
-    if (!response || !response.ok) {
-      console.log('All Maton endpoints failed, using fallback data');
-      return null;
-    }
+    req.setTimeout(10000, () => {
+      req.destroy();
+      resolve(null);
+    });
     
-    const data = await response.json();
-    console.log('Maton response:', JSON.stringify(data, null, 2));
-    
-    // Parse the sheet data
-    if (data.values && data.values.length > 0) {
-      const parsed = parseSheetData(data.values);
-      return parsed;
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('Maton fetch error:', error);
-    return null;
-  }
+    req.end();
+  });
 }
 
-// Parse Google Sheets data
-function parseSheetData(values: any[][]): {templates: NotionItem[], affiliates: NotionItem[]} {
+// Parse sheet using actual column names
+function parseSheetData(values: any[][]): {templates: NotionItem[], affiliates: NotionItem[]} | null {
   const headers = values[0];
   const rows = values.slice(1);
+  
+  // Find column indices based on actual headers
+  const getColIndex = (name: string): number => {
+    const idx = headers.findIndex((h: string) => 
+      h.toLowerCase().includes(name.toLowerCase())
+    );
+    return idx >= 0 ? idx : -1;
+  };
+  
+  const nameIdx = getColIndex('name');
+  const catIdx = getColIndex('category');
+  const descIdx = getColIndex('description');
+  const priceIdx = getColIndex('price');
+  const linkIdx = getColIndex('button link') || getColIndex('link');
+  const imgIdx = getColIndex('image link') || getColIndex('image');
+  
+  if (nameIdx === -1) {
+    console.log('Could not find Name column');
+    return null;
+  }
   
   const templates: NotionItem[] = [];
   const affiliates: NotionItem[] = [];
   
-  for (const row of rows) {
-    const item: any = {};
-    headers.forEach((header: string, index: number) => {
-      item[header] = row[index] || '';
-    });
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row[nameIdx]) continue; // Skip empty rows
     
-    if (item.Status !== 'Published') continue;
+    const title = row[nameIdx] || '';
+    const category = (row[catIdx] || 'Template') as NotionCategory;
+    const description = row[descIdx] || '';
+    const price = row[priceIdx] || '$0';
+    const link = row[linkIdx] || 'https://curioustapan.gumroad.com/';
+    const imageUrl = row[imgIdx] || `https://placehold.co/400x300/FDFBF7/1A1A1A?text=${encodeURIComponent(title.substring(0, 15))}`;
     
-    const parsedItem: NotionItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      title: item.Product || '',
-      description: item.Description || '',
-      imageUrl: item.Image || 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Template',
-      category: (item.Category as NotionCategory) || 'Template',
-      link: item['Product URL'] || 'https://curioustapan.gumroad.com/',
-      price: item.Price || 'Free',
+    const item: NotionItem = {
+      id: `sheet-${i}`,
+      title: title.trim(),
+      description: description.trim(),
+      imageUrl: imageUrl.trim() || `https://placehold.co/400x300/FDFBF7/1A1A1A?text=${encodeURIComponent(title.substring(0, 15))}`,
+      category: category.trim() as NotionCategory,
+      link: link.trim() || '#',
+      price: price.trim() || 'Free',
     };
     
-    if (!parsedItem.title) continue;
-    
-    if (parsedItem.category === 'Template') {
-      templates.push(parsedItem);
-    } else if (parsedItem.category === 'Affiliate' || parsedItem.category === 'Tools') {
-      affiliates.push(parsedItem);
+    // Categorize
+    const cat = category.toLowerCase();
+    if (cat === 'template' || cat === 'app') {
+      templates.push(item);
+    } else if (cat === 'affiliate' || cat === 'tool' || cat === 'tools') {
+      affiliates.push(item);
+    } else {
+      templates.push(item); // Default to templates
     }
   }
   
   return { templates, affiliates };
 }
 
-// Main export functions
+// Export functions
 export async function getAllItems(): Promise<NotionItem[]> {
-  const data = await fetchFromMatonSheets();
+  const data = await fetchFromSheets();
   if (data) {
+    console.log(`Sheets: ${data.templates.length} templates, ${data.affiliates.length} affiliates`);
     return [...data.templates, ...data.affiliates];
   }
-  return [...staticTemplates, ...staticAffiliates];
+  console.log('Using fallback data');
+  return [...fallbackTemplates, ...fallbackAffiliates];
 }
 
 export async function getItemsByCategory(category: NotionCategory): Promise<NotionItem[]> {
-  const data = await fetchFromMatonSheets();
+  const data = await fetchFromSheets();
   
   if (data) {
+    console.log(`Fetched from sheets for ${category}`);
     if (category === 'Template') return data.templates;
     if (category === 'Affiliate') return data.affiliates;
     return [];
   }
   
-  // Fallback to static
-  if (category === 'Template') return staticTemplates;
-  if (category === 'Affiliate') return staticAffiliates;
+  // Fallback
+  if (category === 'Template') return fallbackTemplates;
+  if (category === 'Affiliate') return fallbackAffiliates;
   return [];
 }
 
-export const DATABASE_ID = 'google-sheets-via-maton';
+export const DATABASE_ID = SHEET_ID;
