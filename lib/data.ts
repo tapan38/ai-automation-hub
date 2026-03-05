@@ -92,15 +92,24 @@ const allProducts: NotionItem[] = [
     price: 'Free tier'
   },
 
-  // TOOLBOX PRODUCTS (Category = "App")
+  // TOOLBOX PRODUCTS (Category = "App") - AFFILIATE TOOLS
   {
-    id: '2',
-    title: 'Monical AI',
-    description: 'All in one AI',
-    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Monical+AI',
+    id: 'reclaim',
+    title: 'Reclaim AI',
+    description: 'AI calendar assistant that saves 7.6 hours/week. FREE forever plan includes unlimited tasks, buffer time & habit tracking. Smart scheduling automation for Google Calendar & Outlook.',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Reclaim+AI',
+    category: 'App',
+    link: 'https://go.reclaim.ai/ykyg21k0nfq4',
+    price: 'Free Forever'
+  },
+  {
+    id: 'monica',
+    title: 'Monica AI',
+    description: 'FREE Chrome extension with 10M+ users. Access GPT-5, Claude, Gemini & Sora in one place. AI sidebar, writing assistant, image generation & chat - all from your browser.',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Monica+AI',
     category: 'App',
     link: 'https://monica.im/invitation-affiliate?ref=ndrmyzc',
-    price: 'Free Credits/Trail'
+    price: 'Free Extension'
   }
 ];
 
