@@ -22,36 +22,36 @@ export default function Card({ title, description, imageUrl, price, link, catego
     ? 'https://via.placeholder.com/400x300/FDFBF7/1A1A1A?text=AI+Template' 
     : imageUrl
 
-  const isFree = price === '$0' || price === 'Free' || price === '' || !price
+  const isFree = price === '$0' || price === '$0+' || price === 'Free' || price === '' || !price
   const hasLink = link && link !== '#'
-  
-  // Determine button text and behavior based on category
+
+  // Determine button text and behavior based on category AND price
   const getButtonConfig = () => {
     switch (category) {
       case 'App':
-        return {
-          text: 'View App',
-          href: hasLink ? link : '#',
-          target: '_blank'
+        return { 
+          text: 'View App', 
+          href: hasLink ? link : '#', 
+          target: '_blank' 
         }
       case 'Template':
-        return {
-          text: 'Get the Template',
-          href: hasLink ? link : 'https://curioustapan.gumroad.com/',
-          target: '_self'
+        return { 
+          text: isFree ? 'Get Free' : `Buy - ${price}`, 
+          href: hasLink ? link : 'https://curioustapan.gumroad.com/', 
+          target: '_self' 
         }
       case 'Knowledge':
-        return {
-          text: isFree ? 'Get it Free' : price,
-          href: hasLink ? link : 'https://curioustapan.gumroad.com/',
-          target: '_self'
+        return { 
+          text: isFree ? 'Get it Free' : price, 
+          href: hasLink ? link : 'https://curioustapan.gumroad.com/', 
+          target: '_self' 
         }
       case 'Affiliate':
       default:
-        return {
-          text: 'Learn More',
-          href: hasLink ? link : '#',
-          target: '_blank'
+        return { 
+          text: 'Learn More', 
+          href: hasLink ? link : '#', 
+          target: '_blank' 
         }
     }
   }
@@ -71,42 +71,39 @@ export default function Card({ title, description, imageUrl, price, link, catego
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
           onError={() => setImageError(true)}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px)) 50vw, 33vw"
         />
         
-        {/* Price Tag - only show for paid items */}
-        {!isFree && category !== 'App' && (
-          <div className="absolute top-3 right-3">
-            <span className="px-3 py-1 rounded-full text-sm font-medium bg-deep-charcoal text-white">
+        {/* PRICE TAG - Now shows for ALL non-App items with price */}
+        {category !== 'App' && price && price !== '' && (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="px-3 py-1.5 rounded-full text-sm font-semibold bg-white text-deep-charcoal border border-deep-charcoal shadow-lg">
               {price}
             </span>
           </div>
         )}
       </div>
 
-      {/* Content - flex-grow to push button to bottom */}
+      {/* Content */}
       <div className="flex flex-col flex-grow space-y-3">
         <h3 className="text-lg font-semibold text-deep-charcoal line-clamp-2">
           {title}
         </h3>
-        
         <p className="text-warm-gray text-sm line-clamp-3 leading-relaxed flex-grow">
           {description}
         </p>
 
-        {/* CTA Button - minimalist dark style, always at bottom */}
+        {/* CTA Button with price */}
         {isGumroadLink ? (
-          // Gumroad overlay button
-          <a
-            href={buttonConfig.href}
+          <a 
+            href={buttonConfig.href} 
             className="inline-flex items-center justify-center w-full px-4 py-3 bg-deep-charcoal text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all duration-200 mt-auto gumroad-button"
           >
             {buttonConfig.text}
           </a>
         ) : (
-          // Regular external link
-          <a
-            href={buttonConfig.href}
+          <a 
+            href={buttonConfig.href} 
             target={buttonConfig.target}
             rel={buttonConfig.target === '_blank' ? 'noopener noreferrer' : undefined}
             className="inline-flex items-center justify-center w-full px-4 py-3 bg-deep-charcoal text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-all duration-200 mt-auto"
