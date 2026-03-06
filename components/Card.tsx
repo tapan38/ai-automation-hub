@@ -75,7 +75,7 @@ export default function Card({ title, description, imageUrl, price, link, catego
         />
         
         {/* Price Tag - only show for paid items */}
-        {!isFree && category !== 'App' && category !== 'Template' && (
+        {!isFree && category !== 'App' && (
           <div className="absolute top-3 right-3">
             <span className="px-3 py-1 rounded-full text-sm font-medium bg-deep-charcoal text-white">
               {price}
