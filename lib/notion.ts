@@ -10,7 +10,8 @@ const sampleTemplates: NotionItem[] = [
     link: 'https://curioustapan.gumroad.com/',
     price: '$0+'
   },
-  {    id: '2',
+  {
+    id: '2',
     title: 'Launch-Fast API Toolbox & Bypass Guide',
     description: 'Essential API tools and techniques to bypass common bottlenecks and launch products faster.',
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=API+Toolbox',
@@ -25,7 +26,7 @@ const sampleTemplates: NotionItem[] = [
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Newsletter+Playbook',
     category: 'Template',
     link: 'https://curioustapan.gumroad.com/',
-        price: '$19'
+    price: '$19'
   },
   {
     id: '4',
@@ -40,7 +41,7 @@ const sampleTemplates: NotionItem[] = [
     id: '5',
     title: 'Affiliate Velocity Engine',
     description: 'Automated affiliate marketing system to generate passive income with minimal effort.',
-        imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Affiliate+Engine',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Affiliate+Engine',
     category: 'Template',
     link: 'https://curioustapan.gumroad.com/',
     price: '$29'
@@ -55,10 +56,35 @@ const sampleTemplates: NotionItem[] = [
     price: '$0'
   }
 ];
+
 const sampleAffiliates: NotionItem[] = [
-  { id: '7', title: 'n8n.io', description: 'Open-source workflow automation. Connect 400+ apps and APIs to automate everything.', imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=n8n', category: 'Affiliate', link: 'https://n8n.io', price: 'Free/Self-hosted' },
-  { id: '8', title: 'Notion', description: 'All-in-one workspace for notes, databases, wikis, and project management.', imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Notion', category: 'Affiliate', link: 'https://notion.so', price: 'Free tier' },
-  { id: '9', title: 'OpenRouter', description: 'Unified API for LLMs. Access GPT, Claude, and more through one API.', imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=OpenRouter', category: 'Affiliate', link: 'https://openrouter.ai', price: 'Pay per use' }
+  {
+    id: '7',
+    title: 'n8n.io',
+    description: 'Open-source workflow automation. Connect 400+ apps and APIs to automate everything.',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=n8n',
+    category: 'Affiliate',
+    link: 'https://n8n.io',
+    price: 'Free/Self-hosted'
+  },
+  {
+    id: '8',
+    title: 'Notion',
+    description: 'All-in-one workspace for notes, databases, wikis, and project management.',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Notion',
+    category: 'Affiliate',
+    link: 'https://notion.so',
+    price: 'Free tier'
+  },
+  {
+    id: '9',
+    title: 'OpenRouter',
+    description: 'Unified API for LLMs. Access GPT, Claude, and more through one API.',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=OpenRouter',
+    category: 'Affiliate',
+    link: 'https://openrouter.ai',
+    price: 'Pay per use'
+  }
 ];
 
 export type NotionCategory = 'Template' | 'Affiliate' | 'App' | 'Knowledge' | 'Tools' | 'Webinar';
@@ -69,7 +95,7 @@ export interface NotionItem {
   description: string;
   imageUrl: string;
   category: NotionCategory;
-    link: string;
+  link: string;
   price: string;
 }
 
@@ -83,7 +109,8 @@ export async function getAllItems(): Promise<NotionItem[]> {
 }
 
 // Fetch items by category
-export async function getItemsByCategory(category: NotionCategory): Promise<NotionItem[]> {  return new Promise((resolve) => {
+export async function getItemsByCategory(category: NotionCategory): Promise<NotionItem[]> {
+  return new Promise((resolve) => {
     setTimeout(() => {
       if (category === 'Template') {
         resolve(sampleTemplates);
