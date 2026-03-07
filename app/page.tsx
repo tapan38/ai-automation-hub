@@ -43,7 +43,7 @@ export default async function Home() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-deep-charcoal mb-4">Toolbox</h2>
             <p className="text-warm-gray max-w-2xl mx-auto">
-              Ready-to-use automation templates, Notion systems, and AI apps to supercharge your productivity.
+             Curated AI tools, software, and affiliate resources I personally use and recommend.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -81,7 +81,7 @@ export default async function Home() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-deep-charcoal mb-4">Playbook</h2>
             <p className="text-warm-gray max-w-2xl mx-auto">
-              Curated AI tools, software, and affiliate resources I personally use and recommend.
+            Ready-to-use automation templates, Notion systems, and AI apps to supercharge your productivity.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
