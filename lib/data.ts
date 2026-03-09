@@ -100,6 +100,15 @@ const allProducts: NotionItem[] = [
     category: 'App',
     link: 'https://monica.im/invitation-affiliate?ref=ndrmyzc',
     price: 'Free Extension'
+  },
+  {
+    id: 'customgpt',
+    title: 'CustomGPT.ai',
+    description: 'Build custom GPTs from your business content. #1 anti-hallucination AI with trusted answers. SOC-2 & GDPR compliant. 7-day free trial.',
+    imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=CustomGPT',
+    category: 'App',
+    link: 'https://customgpt.ai/?fpr=tapan94',
+    price: '7-day Trial'
   }
 ];
 
