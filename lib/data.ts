@@ -43,7 +43,7 @@ const allProducts: NotionItem[] = [
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Newsletter+Playbook',
     category: 'Template',
     link: 'https://curioustapan.gumroad.com/l/thyra',
-    price: '$19'
+    price: '$1'
   },
   {
     id: 'g4',
@@ -52,7 +52,7 @@ const allProducts: NotionItem[] = [
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=No+DB+Blueprint',
     category: 'Template',
     link: 'https://curioustapan.gumroad.com/l/tiraw',
-    price: '$19'
+    price: '$1'
   },
   {
     id: 'g5',
@@ -79,7 +79,7 @@ const allProducts: NotionItem[] = [
     imageUrl: 'https://placehold.co/400x300/FDFBF7/1A1A1A?text=Claude+Skills+Guide',
     category: 'Template',
     link: 'https://curioustapan.gumroad.com/l/qhsze',
-    price: '$19'
+    price: '$1'
   },
 
   // TOOLBOX PRODUCTS (Category = "App") - AFFILIATE TOOLS
