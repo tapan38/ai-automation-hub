@@ -1,4 +1,5 @@
 'use client'
+// Cache bust: March 10, 2025
 
 interface EmailCaptureProps {
   variant?: 'light' | 'dark'

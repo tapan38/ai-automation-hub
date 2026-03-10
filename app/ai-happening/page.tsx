@@ -6,6 +6,7 @@ export const metadata = {
 }
 
 // Fetch data from SheetDB with ISR caching (24 hours)
+// Updated: March 10, 2025 - Cache bust
 async function getPosts() {
   try {
     const response = await fetch('https://sheetdb.io/api/v1/kc24mhd5f6de3', {
