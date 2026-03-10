@@ -82,27 +82,16 @@ export default async function AIHappeningPage() {
         </div>
       </section>
 
-      {/* Subscribe Section - EXACTLY AS IS */}
+      {/* Subscribe Section - Single Button */}
       <section className="py-8 bg-[#FAF8F3]/50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto">
-          <div className="bg-white rounded-xl p-8 shadow-sm border border-[#E8E4DE]/60">
-            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-2 text-center">
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-[#E8E4DE]/60 text-center">
+            <button
+              className="px-8 py-3 bg-[#1A1A1A] text-white rounded-lg font-medium hover:bg-opacity-90 transition-all"
+              onClick={() => {}}
+            >
               Subscribe to the Daily Vibe
-            </h2>
-            <p className="text-[#8B8680] text-center mb-6">
-              Get one AI update delivered to your inbox every morning.
-            </p>
-            <form className="space-y-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 rounded-lg border border-[#E8E4DE]/60 bg-white text-[#1A1A1A] placeholder-[#8B8680]/50 focus:outline-none focus:ring-2 focus:ring-[#1A1A1A]/20"
-              />
-              <button type="submit" className="w-full px-6 py-3 bg-[#1A1A1A] text-white rounded-lg font-medium hover:bg-opacity-90 transition-all">
-                Subscribe
-              </button>
-            </form>
-            <p className="text-xs text-[#8B8680] text-center mt-4">No spam. Unsubscribe anytime.</p>
+            </button>
           </div>
         </div>
       </section>

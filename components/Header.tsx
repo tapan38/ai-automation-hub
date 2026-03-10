@@ -28,16 +28,14 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* CTA Button - Fixed link */}
+          {/* CTA Button - No link */}
           <div className="hidden md:block">
-            <a
-              href="https://curioustapan.gumroad.com/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
               className="btn-primary text-sm"
+              onClick={() => {}}
             >
               Subscribe
-            </a>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -80,15 +78,12 @@ export default function Header() {
               >
                 AI Happening
               </Link>
-              <a
-                href="https://curioustapan.gumroad.com/"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
                 className="btn-primary text-sm text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Subscribe
-              </a>
+              </button>
             </nav>
           </div>
         )}
