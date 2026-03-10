@@ -29,7 +29,8 @@ export default function MorphingSubscribe({
     })
 
     try {
-      // SheetDB expects array format: [{ "Email": "...", "Date": "..." }]
+      // SheetDB expects array format with EXACT column names from sheet
+      // Column header is "Email Id" not "Email"
       const response = await fetch('https://sheetdb.io/api/v1/yi7a1u6kqnbw4', {
         method: 'POST',
         headers: {
@@ -37,7 +38,7 @@ export default function MorphingSubscribe({
         },
         body: JSON.stringify([
           {
-            Email: email,
+            "Email Id": email,
             Date: date
           }
         ])
