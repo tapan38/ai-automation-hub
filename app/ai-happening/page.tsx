@@ -27,9 +27,12 @@ async function getPosts() {
 // Type for SheetDB response
 interface Post {
   Date: string
-  Headline: string
-  Summary: string
-  Link: string
+  Headline?: string
+  headline?: string
+  Summary?: string
+  summary?: string
+  Link?: string
+  link?: string
 }
 
 export default async function AIHappeningPage() {
@@ -131,12 +134,12 @@ export default async function AIHappeningPage() {
 
                   {/* Headline */}
                   <h3 className="text-xl font-bold text-[#1A1A1A] mb-3">
-                    {post.Headline}
+                    {post.Headline || post.headline}
                   </h3>
 
                   {/* Summary */}
                   <ul className="space-y-2">
-                    {parseSummary(post.Summary).map((point, i) => (
+                    {parseSummary(post.Summary || post.summary || '').map((point, i) => (
                       <li key={i} className="flex items-start text-[#8B8680]">
                         <span className="w-1.5 h-1.5 bg-[#1A1A1A]/40 rounded-full mt-2 mr-3 flex-shrink-0" />
                         <span className="leading-relaxed">{point}</span>
@@ -145,10 +148,10 @@ export default async function AIHappeningPage() {
                   </ul>
 
                   {/* Read More Link */}
-                  {post.Link && (
+                  {(post.Link || post.link) && (
                     <div className="mt-4 pt-4 border-t border-[#E8E4DE]/40">
                       <a
-                        href={post.Link}
+                        href={post.Link || post.link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center text-sm font-medium text-[#1A1A1A] hover:text-opacity-80 transition-colors group"
