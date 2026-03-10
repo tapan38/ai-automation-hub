@@ -83,16 +83,13 @@ export default async function AIHappeningPage() {
         </div>
       </section>
 
-      {/* Subscribe Section - Single Button */}
+      {/* Subscribe Section - Static Button (Server Component compatible) */}
       <section className="py-8 bg-[#FAF8F3]/50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto">
           <div className="bg-white rounded-xl p-8 shadow-sm border border-[#E8E4DE]/60 text-center">
-            <button
-              className="px-8 py-3 bg-[#1A1A1A] text-white rounded-lg font-medium hover:bg-opacity-90 transition-all"
-              onClick={() => {}}
-            >
+            <div className="px-8 py-3 bg-[#1A1A1A] text-white rounded-lg font-medium inline-block">
               Subscribe to the Daily Vibe
-            </button>
+            </div>
           </div>
         </div>
       </section>
