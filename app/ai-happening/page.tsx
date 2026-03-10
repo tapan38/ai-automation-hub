@@ -40,6 +40,7 @@ const dummyPosts = [
 ]
 
 // AI Happening Daily Blog Page
+// Force rebuild: timestamp 1773108480
 export const metadata = {
   title: 'AI Happening | Daily AI News & Updates',
   description: 'Your daily dose of AI news, tools, and updates. One curated story per day to keep you informed.',
