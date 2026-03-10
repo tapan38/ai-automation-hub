@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 interface MorphingSubscribeProps {
-  variant?: 'light' | 'dark' | 'primary'
+  variant?: 'light' | 'dark' | 'primary' | 'header'
   defaultText?: string
 }
 
@@ -64,8 +64,13 @@ export default function MorphingSubscribe({
     // Dark bg -> Clean white button
     dark: 'bg-white text-[#1A1A1A] hover:bg-gray-50 shadow-lg shadow-white/20 border-2 border-white',
     // Default -> Bold black
-    primary: 'bg-[#1A1A1A] text-white hover:bg-black shadow-lg shadow-black/25 border-2 border-[#1A1A1A]'
+    primary: 'bg-[#1A1A1A] text-white hover:bg-black shadow-lg shadow-black/25 border-2 border-[#1A1A1A]',
+    // Header -> Less bold, smaller
+    header: 'bg-[#1A1A1A] text-white hover:bg-black/90 border border-[#1A1A1A]'
   }
+
+  // Button size based on variant
+  const isCompact = variant === 'header'
 
   if (isExpanded) {
     return (
@@ -104,7 +109,11 @@ export default function MorphingSubscribe({
   return (
     <button
       onClick={() => setIsExpanded(true)}
-      className={`inline-flex items-center justify-center px-8 py-4 rounded-lg font-bold text-lg tracking-wide transition-all transform hover:scale-105 active:scale-95 ${buttonClasses[variant]}`}
+      className={`inline-flex items-center justify-center rounded-lg transition-all transform hover:scale-105 active:scale-95 ${
+        isCompact 
+          ? 'px-4 py-2 font-medium text-sm' 
+          : 'px-8 py-4 font-bold text-lg tracking-wide'
+      } ${buttonClasses[variant]}`}
     >
       {defaultText}
       <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

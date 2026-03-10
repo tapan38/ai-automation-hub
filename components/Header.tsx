@@ -29,9 +29,9 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* CTA Button - BLACK */}
+          {/* CTA Button - BLACK LESS BOLD */}
           <div className="hidden md:block">
-            <MorphingSubscribe variant="primary" defaultText="Subscribe" />
+            <MorphingSubscribe variant="header" defaultText="Subscribe" />
           </div>
 
           {/* Mobile Menu Button */}
@@ -63,7 +63,7 @@ export default function Header() {
                 AI Happening
               </Link>
               <div className="pt-2">
-                <MorphingSubscribe variant="primary" defaultText="Subscribe" />
+                <MorphingSubscribe variant="header" defaultText="Subscribe" />
               </div>
             </nav>
           </div>
