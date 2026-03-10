@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import PostHogProvider from '@/components/PostHogProvider'
+import PostHogPageView from '@/components/PostHogPageView'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -31,18 +33,18 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'AI Knowledge & Automation Hub | Outsource Your Brain to AI',
     description: 'Master AI automation with free templates, n8n workflows, and productivity tools. Save hours every day.',
- siteName: 'AI Automation Hub',
- locale: 'en_US',
+    siteName: 'AI Automation Hub',
+    locale: 'en_US',
     type: 'website',
   },
   twitter: {
-card: 'summary_large_image',
+    card: 'summary_large_image',
     title: 'AI Knowledge & Automation Hub',
     description: 'Master AI automation with free templates and workflows.',
   },
   robots: {
-  index: true,
-  follow: true,
+    index: true,
+    follow: true,
     googleBot: {
       index: true,
       follow: true,
@@ -64,7 +66,10 @@ export default function RootLayout({
         <script src="https://gumroad.com/js/gumroad-embed.js" async></script>
       </head>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <PostHogProvider>
+          <PostHogPageView />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 
 interface MorphingSubscribeProps {
   variant?: 'light' | 'dark' | 'primary' | 'header'
@@ -14,6 +15,16 @@ export default function MorphingSubscribe({
   const [isExpanded, setIsExpanded] = useState(false)
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleClick = () => {
+    setIsExpanded(true)
+    // Track button click
+    posthog.capture('subscribe_button_clicked', {
+      location: defaultText === 'Get Free Guide' ? 'hero' : defaultText === 'Subscribe to the Daily Vibe' ? 'ai-happening' : 'header',
+      button_text: defaultText,
+      variant: variant
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,14 +56,31 @@ export default function MorphingSubscribe({
       })
 
       if (response.ok) {
+        // Track successful submission
+        posthog.capture('email_submitted', {
+          location: defaultText === 'Get Free Guide' ? 'hero' : defaultText === 'Subscribe to the Daily Vibe' ? 'ai-happening' : 'header',
+          button_text: defaultText
+        })
         // Redirect on success
         window.location.href = 'https://curioustapan.gumroad.com/'
       } else {
         setIsSubmitting(false)
+        // Track submission failure
+        posthog.capture('email_submit_failed', {
+          location: defaultText === 'Get Free Guide' ? 'hero' : defaultText === 'Subscribe to the Daily Vibe' ? 'ai-happening' : 'header',
+          button_text: defaultText,
+          error: 'API error'
+        })
         alert('Failed to subscribe. Please try again.')
       }
     } catch (error) {
       setIsSubmitting(false)
+      // Track submission error
+      posthog.capture('email_submit_error', {
+        location: defaultText === 'Get Free Guide' ? 'hero' : defaultText === 'Subscribe to the Daily Vibe' ? 'ai-happening' : 'header',
+        button_text: defaultText,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
       alert('Network error. Please try again.')
     }
   }
@@ -108,7 +136,7 @@ export default function MorphingSubscribe({
 
   return (
     <button
-      onClick={() => setIsExpanded(true)}
+      onClick={handleClick}
       className={`inline-flex items-center justify-center rounded-lg transition-all transform hover:scale-105 active:scale-95 ${
         isCompact 
           ? 'px-4 py-2 font-medium text-sm' 
