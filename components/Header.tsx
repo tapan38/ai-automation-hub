@@ -1,8 +1,8 @@
-'use client'
-// Cache bust: March 10, 2025
+'use client' // Cache bust: March 10, 2025
 
 import { useState } from 'react'
 import Link from 'next/link'
+import MorphingSubscribe from './MorphingSubscribe'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -29,14 +29,9 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* CTA Button - No link */}
+          {/* CTA Button - Morphing */}
           <div className="hidden md:block">
-            <button
-              className="btn-primary text-sm"
-              onClick={() => {}}
-            >
-              Subscribe
-            </button>
+            <MorphingSubscribe variant="dark" defaultText="Subscribe" />
           </div>
 
           {/* Mobile Menu Button */}
@@ -58,33 +53,18 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-subtle-border/30">
             <nav className="flex flex-col space-y-4">
-              <Link
-                href="#toolbox"
-                className="text-sm text-warm-gray hover:text-deep-charcoal"
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <Link href="#toolbox" className="text-sm text-warm-gray hover:text-deep-charcoal" onClick={() => setIsMenuOpen(false)}>
                 Toolbox
               </Link>
-              <Link
-                href="#playbook"
-                className="text-sm text-warm-gray hover:text-deep-charcoal"
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <Link href="#playbook" className="text-sm text-warm-gray hover:text-deep-charcoal" onClick={() => setIsMenuOpen(false)}>
                 Playbook
               </Link>
-              <Link
-                href="/ai-happening"
-                className="text-sm text-warm-gray hover:text-deep-charcoal"
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <Link href="/ai-happening" className="text-sm text-warm-gray hover:text-deep-charcoal" onClick={() => setIsMenuOpen(false)}>
                 AI Happening
               </Link>
-              <button
-                className="btn-primary text-sm text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Subscribe
-              </button>
+              <div className="pt-2">
+                <MorphingSubscribe variant="dark" defaultText="Subscribe" />
+              </div>
             </nav>
           </div>
         )}
