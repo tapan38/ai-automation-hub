@@ -23,14 +23,17 @@ export default function Header() {
             <Link href="#playbook" className="text-sm text-warm-gray hover:text-deep-charcoal transition-colors">
               Playbook
             </Link>
+            <Link href="/ai-happening" className="text-sm text-warm-gray hover:text-deep-charcoal transition-colors">
+              AI Happening
+            </Link>
           </nav>
 
           {/* CTA Button - Fixed link */}
           <div className="hidden md:block">
-            <a 
-              href="https://curioustapan.gumroad.com/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://curioustapan.gumroad.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-primary text-sm"
             >
               Subscribe
@@ -38,8 +41,8 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden p-2" 
+          <button
+            className="md:hidden p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,23 +59,30 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-subtle-border/30">
             <nav className="flex flex-col space-y-4">
-              <Link 
-                href="#toolbox" 
+              <Link
+                href="#toolbox"
                 className="text-sm text-warm-gray hover:text-deep-charcoal"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Toolbox
               </Link>
-              <Link 
-                href="#playbook" 
+              <Link
+                href="#playbook"
                 className="text-sm text-warm-gray hover:text-deep-charcoal"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Playbook
               </Link>
-              <a 
-                href="https://curioustapan.gumroad.com/" 
-                target="_blank" 
+              <Link
+                href="/ai-happening"
+                className="text-sm text-warm-gray hover:text-deep-charcoal"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                AI Happening
+              </Link>
+              <a
+                href="https://curioustapan.gumroad.com/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary text-sm text-center"
                 onClick={() => setIsMenuOpen(false)}
