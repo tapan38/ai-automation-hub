@@ -1,0 +1,60 @@
+# Environment files
+.env*
+
+# Local files
+*.local
+
+# Logs
+*.log
+
+# Node modules
+node_modules/
+
+# OpenClaw workspace files
+AGENTS.md
+BOOTSTRAP.md
+HEARTBEAT.md
+IDENTITY.md
+SOUL.md
+TOOLS.md
+USER.md
+
+# Memory
+memory/
+
+# Skills
+dist/
+skills/
+
+# Temporary files
+temp_clone/
+
+# Media
+media/
+
+# Vercel
+deploy_vercel.py
+vercel_deploy/
+
+# GitHub
+deploy_github.sh
+
+# Test files
+test-*.js
+test-*.py
+
+# Config
+config.json
+
+# Data
+*.csv
+*.json
+
+# Ignore all .env files
+.env*
+
+# Ignore all .json files (adjust as needed)
+*.json
+
+# Ignore all .md files (adjust as needed)
+*.md
